@@ -334,7 +334,23 @@ if (defined('PKG_AUTO_INSTALL') && PKG_AUTO_INSTALL) {
     }
 }
 if (!empty($_GET['download'])) {
+
     echo '<script>document.location.href = "/core/packages/' . $signature . '.transport.zip' . '";</script>';
+
+  $name = $builder->getSignature() . '.transport.zip';
+
+  copy(MODX_CORE_PATH . '/packages/' . $name, dirname(dirname(__FILE__)) . '/_packages/' . $name);
+  if ($content = file_get_contents(MODX_CORE_PATH . '/packages/' . $name)) {
+    header('Content-Description: File Transfer');
+    header('Content-Type: application/octet-stream');
+    header('Content-Disposition: attachment; filename=' . $name);
+    header('Content-Transfer-Encoding: binary');
+    header('Expires: 0');
+    header('Cache-Control: must-revalidate');
+    header('Pragma: public');
+    header('Content-Length: ' . strlen($content));
+    exit($content);
+  }
 }
 
 $modx->log(modX::LOG_LEVEL_INFO, "\n<br />Execution time: {$totalTime}\n");
